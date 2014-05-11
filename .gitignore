@@ -21,3 +21,6 @@
 *.i*86
 *.x86_64
 *.hex
+
+# For ycm stuff
+*.ycm_extra_conf.pyc
