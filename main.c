@@ -118,7 +118,7 @@ void module_cpu_load(char *s, char *conky)
 
 void module_cpu_temp(char *s, char *conky)
 {
-    sprintf(s, "%s%s*C", s, conky);
+    sprintf(s, "%s%s°C", s, conky);
 }
 
 int main(void)
