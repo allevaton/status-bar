@@ -11,6 +11,7 @@ use_spacer none
 
 #:: ${time %A, %b %d, %Y  %H:%M:%S} ::\
 #
+#|${battery_short}|${battery_time}
 
 TEXT \
-${cpu cpu0}%|${acpitemp}|${battery_short}|${battery_time}
+${cpu cpu0}|${acpitemp}

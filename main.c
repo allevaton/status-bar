@@ -19,9 +19,42 @@ char *print_color(char *c)
 char *print_separator()
 {
     char *s = malloc(16);
-    sprintf(s, "%s | ", print_color("CCCCCC"));
+    sprintf(s, " %s| ", print_color("CCCCCC"));
     return s;
 }
+
+int load_conky( char **a) //{{{
+{
+    FILE *conky_out = popen("conky", "r");
+    if(conky_out == NULL)
+    {
+        puts("something went wrong with conky");
+        return -1;
+    }
+
+    const int size = 128;
+    char *conky = malloc(size);
+
+    char c = ' ';
+    int i = 0;
+    while((c = fgetc(conky_out)) != '\n')
+    {
+        conky[i] = c;
+        i++;
+    }
+
+    char *token;
+    i = 0;
+    while((token = strsep(&conky, "|")) != NULL)
+    {
+        a[i] = token;
+        i++;
+    }
+    pclose(conky_out);
+    free(conky);
+
+    return 1;
+} // }}}
 
 char *switch_wday(int wday)
 {
@@ -78,10 +111,14 @@ void module_time(char *s)
             timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 }
 
-void module_cpu_load(char *s)
+void module_cpu_load(char *s, char *conky)
 {
-    long clock = sysconf(_SC_NPROCESSORS_ONLN);
-    printf("%lu", clock);
+    sprintf(s, "%sCPU %02d%%", s, atoi(conky));
+}
+
+void module_cpu_temp(char *s, char *conky)
+{
+    sprintf(s, "%s%s*C", s, conky);
 }
 
 int main(void)
@@ -89,43 +126,17 @@ int main(void)
     char *s = malloc(16348);
     const char *sep = print_separator();
 
-    FILE *conky_out = popen("conky", "r");
-    if(conky_out == NULL)
-    {
-        puts("something went wrong with conky");
-        return -1;
-    }
+    char *conky_array[128];
+    load_conky(conky_array);
 
-    const int size = 128;
-    char *conky = malloc(size);
-
-    char c = ' ';
-    int i = 0;
-    while((c = fgetc(conky_out)) != '\n')
-    {
-        conky[i] = c;
-        i++;
-    }
-
-    char *conky_array[size];
-    char *token;
-    i = 0;
-    while((token = strsep(&conky, "|")) != NULL)
-    {
-        conky_array[i] = token;
-        i++;
-    }
-
-    //printf("VOL %s | %s*C", conky_array[0], conky_array[1]);
-    //puts(conky);
-
-    module_cpu_load(s);
+    module_cpu_temp(s, conky_array[1]);
+    sprintf(s, "%s%s", s, sep);
+    module_cpu_load(s, conky_array[0]);
     sprintf(s, "%s%s", s, sep);
     module_time(s);
+
     puts(s);
 
-    pclose(conky_out);
     free(s);
-
     return 0;
 }
