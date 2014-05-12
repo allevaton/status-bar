@@ -160,6 +160,8 @@ void module_battery(char *s, char **acpi)
         status = "BAT";
     else if(strcmp(acpi[0], "Charging") == 0)
         status = "CHR";
+    else
+        status = "ERR";
 
     sprintf(s, "%s%s %s %s", s, status, acpi[1], acpi[2]);
 }
@@ -178,7 +180,7 @@ void module_volume(char *s)
     if(strcmp(status, "on") == 0)
         sprintf(s, "%s♪%02d%%", s, level);
     else
-        sprintf(s, "%s♪xx%%", s);
+        sprintf(s, "%s♪mm%%", s);
 
     free(a);
     pclose(amixer);
