@@ -270,7 +270,7 @@ void module_wireless(char *s)
         else
             color = "00FF00";
 
-        sprintf(s, "%s%sW: (%s", s, print_color(color), strength);
+        sprintf(s, "%s%sW: (%03d%%", s, print_color(color), strn);
     }
 
     FILE *ssid_out = popen("iwconfig wlp3s0 | egrep -o '\".*\"'", "r");
